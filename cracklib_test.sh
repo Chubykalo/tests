@@ -2,8 +2,7 @@
 
 ## every command appends its output to a file, and that output is compared to an ideal result
 
-mkdir cracklib_test
-cd cracklib_test
+mkdir cracklib_test && cd $_
 
 ## check password strength:
 
@@ -14,12 +13,12 @@ echo 'i1oVe|DiZza' | cracklib-check >> test_output.txt
 
 ## make a file with a list of possible passwords, one per line:
 
-echo 'mypassword
+cat << EOF >  dictionary_test.txt 
+mypassword
 123
 lalala
-We@kpwd1' > dictionary_test.txt 
-
-cat dictionary_test.txt >> test_output.txt
+We@kpwd1
+EOF
 
 
 
@@ -29,15 +28,10 @@ cat dictionary_test.txt | cracklib-check >> test_output.txt
 
 
 
-## format words, lowercase, remove control characters, sort list:
+## format words, lowercase, remove control characters, sort list, and create a database in a file format that cracklib utilities can understand:
+## (output shows number of read and written words)
 
-cracklib-format dictionary_test.txt > dictionary_test_formatted.txt 
-
-
-
-## create a database in a file format that cracklib utilities can understand (output shows number of read and written words):
-
-cat dictionary_test_formatted.txt | cracklib-packer cracktest_packed >> test_output.txt
+cracklib-format dictionary_test.txt | cracklib-packer cracktest_packed >> test_output.txt
 
 
 
@@ -49,13 +43,10 @@ cracklib-unpacker cracktest_packed >> test_output.txt
 
 ## create a perfect output test result to compare:
 
-echo 'password: it is based on a dictionary word
+cat << EOF > ideal_result.txt
+password: it is based on a dictionary word
 abc123456: it is too simplistic/systematic
 i1oVe|DiZza: OK
-mypassword
-123
-lalala
-We@kpwd1
 mypassword: it is based on a dictionary word
 123: it is WAY too short
 lalala: it does not contain enough DIFFERENT characters
@@ -64,7 +55,9 @@ We@kpwd1: OK
 123
 lalala
 mypassword
-wekpwd1' > ideal_result.txt
+wekpwd1
+EOF
+
 
 
 ## compare results to see if test passed
@@ -74,6 +67,6 @@ cmp --silent ideal_result.txt test_output.txt && echo '### SUCCESS: Files Are Id
 
 ## cleanup (maybe this could be done better somehow???)
 
-cp test_output.txt ../cracklib_test_log 
-cd ..
+cp test_output.txt ../cracklib_test_log && cd ..
 rm -r cracklib_test
+
