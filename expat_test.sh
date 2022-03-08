@@ -24,3 +24,6 @@ EOF
 
 xmlwf -- example.xml
 xmlwf -- example-error.xml
+
+cd ..
+rm -r expat_test
